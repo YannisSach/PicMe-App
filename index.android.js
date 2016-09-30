@@ -15,65 +15,61 @@ var myNumber, othersNumber, intervalId;
 
 var check = false;
 
-class PicMe extends Component {
-
-    clickMe() {
-        intervalId = setInterval(
-            () => {
-                if (!check) {
-                    fetch('http://picmetest.herokuapp.com/newGame', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                            playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-                        })
-                    }).then((response) => response.json())
-                        .then((responseJson) => {
-                            //console.log(responseJson.yourRandom);
+var clickMe = function() {
+    intervalId = setInterval(
+        () => {
+            if (!check) {
+                fetch('http://picmetest.herokuapp.com/newGame', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
+                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
+                    })
+                }).then((response) => response.json())
+                    .then((responseJson) => {
+                        //console.log(responseJson.yourRandom);
+                        //setInterval(() => {}, 5000);
+                        if (responseJson.yourRandom && responseJson.othersRandom) {
+                            myNumber = responseJson.yourRandom;
+                            othersNumber = responseJson.othersRandom;
+                            console.log(myNumber);
+                            check = !responseJson.wait;
                             //setInterval(() => {}, 5000);
-                            if (responseJson.yourRandom && responseJson.othersRandom) {
-                                myNumber = responseJson.yourRandom;
-                                othersNumber = responseJson.othersRandom;
-                                console.log(myNumber);
-                                check = !responseJson.wait;
-                                //setInterval(() => {}, 5000);
-                            } else if (responseJson.wait) {
-                                check = false;
-                                console.log("two");
-                            } else if (!responseJson.wait) {
-                                check = true;
-                                console.log(myNumber + " " + othersNumber);
-                                //setInterval(() => {}, 5000);
-                            } else
-                                alert("Error");
-                        })
-                        .catch((error) => {
-                            console.error(error);
+                        } else if (responseJson.wait) {
                             check = false;
-                            clearInterval(intervalId);
-                        });
-
-                    if (check) {
+                            console.log("two");
+                        } else if (!responseJson.wait) {
+                            check = true;
+                            console.log(myNumber + " " + othersNumber);
+                            //setInterval(() => {}, 5000);
+                        } else
+                            alert("Error");
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         check = false;
                         clearInterval(intervalId);
-                        // nothing gets executed here
-                        // check = false;
-                        // alert(check);
-                    }
-                }}
-            ,2000
-        );
-        check = false;
-    }
+                    });
 
-    testMe () {
-        // setting check to false leads to infinite loop
-        check = false;
-        alert(check);
-    }
+            } else {
+                clearInterval(intervalId);
+                console.log("and here");
+                check = false;
+            }
+        } ,2000
+    );
+};
+
+var testMe = function() {
+    // setting check to false leads to infinite loop
+    check = false;
+    alert(check);
+};
+
+class PicMe extends Component {
 
     render() {
         let pic = {
@@ -81,10 +77,10 @@ class PicMe extends Component {
         };
         return (
             <View>
-            <TouchableOpacity onPress = {this.clickMe}>
+            <TouchableOpacity onPress = {clickMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
             </TouchableOpacity>
-            <TouchableOpacity onPress = {this.testMe}>
+            <TouchableOpacity onPress = {testMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
             </TouchableOpacity>
             </View>
