@@ -15,9 +15,14 @@ var myNumber, othersNumber, intervalId;
 
 var check = false;
 
-class PicMe extends Component {
+// We had to move functions out of the Component Class!!!
 
-    clickMe() {
+var testMe2= function(){
+		alert ("test2");
+		
+	}
+
+var clickMe = function() {
         intervalId = setInterval(
             () => {
                 if (!check) {
@@ -68,26 +73,30 @@ class PicMe extends Component {
         );
         check = false;
     }
-
+	
+	
+class PicMe extends Component {
+	
     testMe () {
         // setting check to false leads to infinite loop
         check = false;
         alert(check);
+		testMe2();
     }
 
     render() {
-        let pic = {
+        /*let pic = {
             uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
-        };
+        };*/
         return (
-            <View>
-            <TouchableOpacity onPress = {this.clickMe}>
-                <Image source={pic} style={{width: 193, height: 110}}/>
+            
+            <TouchableOpacity onPress = {testMe2}>
+                <Text>Blabla </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress = {this.testMe}>
+            /*<TouchableOpacity onPress = {this.testMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
-            </TouchableOpacity>
-            </View>
+            </TouchableOpacity>*/
+            
         );
     }
 
