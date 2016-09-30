@@ -9,22 +9,33 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-//import MapView from 'react-native-maps';
+import MapView from 'react-native-maps';
+
+var lib = require("./libs/geolocation-lib");
 
 var myNumber, othersNumber, intervalId;
 
-var check = false;
 var serverResponse = "Nothing";
+//keeping a reference to the object when calling the functions
 var self;
 // We had to move functions out of the Component Class!!!
 
-var testMe2= function(){
-		alert ("test2");
-		
-	}
 
-var simplePost = function(){
-			alert("NewPost");
+	
+function changeLocationMsg(){
+	var message = "Unknown Location\n";
+	if(self.state.longitude>0){
+	message = "Longitude: " + self.state.longitude + "\n";
+	message = message + "Latitude: " + self.state.latitude + "\n";
+	}
+	self.setState({location_msg: message});
+	return;
+}	
+	
+var persistantPost = function(){
+			//increase postcnt
+			//var cnt = self.state.postcnt
+			self.setState({postcnt: self.state.postcnt+1});
 			fetch('http://picmetest.herokuapp.com/newGame', {
                     method: 'POST',
                     headers: {
@@ -46,7 +57,7 @@ var simplePost = function(){
 						othersNumber = responseJson.othersRandom;
 					}
 					if(responseJson.wait){
-						setTimeout(() => {simplePost();}, 5000);
+						setTimeout(() => {persistantPost();}, 5000); // passing a reference not a call
 					}
 				}
 			)
@@ -55,56 +66,7 @@ var simplePost = function(){
     
 	
 
-/*	
-var clickMe = function() {
-                 fetch('http://picmetest.herokuapp.com/newGame', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-                    })
-                }).then((response) => response.json())
-                    .then((responseJson) => {
-                    //console.log(responseJson.yourRandom);
-                    //setInterval(() => {}, 5000);
-					serverResponse = responseJsong
-                    if (responseJson.yourRandom && responseJson.othersRandom) {
-						myNumber = responseJson.yourRandom;
-                        othersNumber = responseJson.othersRandom;
-                        //setInterval(() => {}, 5000);
-                        } else if (responseJson.wait) {
 
-                                console.log("two");
-                        } else if (!responseJson.wait) {
-                                check = true;
-                                console.log(myNumber + " " + othersNumber);
-                                //setInterval(() => {}, 5000);
-                        } else
-                                alert("Error");
-                    })
-                    .catch((error) => {
-                            console.error(error);
-                            check = false;
-                            clearInterval(intervalId);
-                    });
-
-                    if (check) {
-                        check = false;
-                        clearInterval(intervalId);
-                        // nothing gets executed here
-                        // check = false;
-                        // alert(check);
-                    }
-                }}
-            ,2000
-        );
-        check = false;
-    }
-*/	
-	
 class PicMe extends Component {
 	
     testMe () {
@@ -116,24 +78,42 @@ class PicMe extends Component {
 
 	 constructor(props) {
 		super(props);
-		this.state = {res : "Nothing"};
+		this.state = {res : "Nothing", postcnt: 0, location_msg: "Unknown Location\n"};
+		setInterval(
+			() => {
+				navigator.geolocation.getCurrentPosition(
+					(position) => {
+						self.setState({longitude: position.coords.longitude});
+						self.setState({latitude: position.coords.latitude});
+					}
+				);
+				changeLocationMsg()
+			}, 2000)
 	 }
     
 	render() {
         /*let pic = {
             uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
         };*/
-		self = this;
+		self = this; //get reference of the class
+		var a = lib.getDistanceFromLatLonInKm(1,2,3,5);
         return (
             <View >
-				<TouchableOpacity onPress = {simplePost.bind(this)}>
+				<TouchableOpacity onPress = {persistantPost}>
 					<Text style={{fontSize: 25}}>PostMe </Text>
 				</TouchableOpacity>
-				<Text style={{fontSize: 25}}>
+				<Text style={{fontSize: 13}}>
 					Server Responded:{"\n"}
 						{this.state.res}
 				</Text>
+				<Text style={{fontSize: 13}}>
+					TotalPosts:{this.state.postcnt}
+				</Text>
+				<Text style = {{fontSize:30 }}>
+					{this.state.location_msg}
+				</Text>
 			</View>
+			
             /*<TouchableOpacity onPress = {this.testMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
             </TouchableOpacity>*/
