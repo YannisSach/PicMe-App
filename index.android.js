@@ -20,45 +20,48 @@ class PicMe extends Component {
     clickMe() {
         intervalId = setInterval(
             () => {
-                fetch('http://picmetest.herokuapp.com/newGame', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-                    })
-                }).then((response) => response.json())
-                    .then((responseJson) => {
-                        //alert(responseJson.yourRandom);
-                        setInterval(() => {}, 5000);
-                        if (responseJson.wait && responseJson.yourRandom) {
-                            myNumber = responseJson.yourRandom;
-                            othersNumber = responseJson.othersRandom;
-                            alert(myNumber);
-                            setInterval(() => {}, 5000);
-                        } else if (responseJson.wait) {
+                if (!check) {
+                    fetch('http://picmetest.herokuapp.com/newGame', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
+                            playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
+                        })
+                    }).then((response) => response.json())
+                        .then((responseJson) => {
+                            //console.log(responseJson.yourRandom);
+                            //setInterval(() => {}, 5000);
+                            if (responseJson.yourRandom && responseJson.othersRandom) {
+                                myNumber = responseJson.yourRandom;
+                                othersNumber = responseJson.othersRandom;
+                                console.log(myNumber);
+                                check = !responseJson.wait;
+                                //setInterval(() => {}, 5000);
+                            } else if (responseJson.wait) {
+                                check = false;
+                                console.log("two");
+                            } else if (!responseJson.wait) {
+                                check = true;
+                                console.log(myNumber + " " + othersNumber);
+                                //setInterval(() => {}, 5000);
+                            } else
+                                alert("Error");
+                        })
+                        .catch((error) => {
+                            console.error(error);
                             check = false;
-                            alert("two");
-                        } else if (!responseJson.wait) {
-                            check = true;
-                            alert(myNumber + " " + othersNumber);
-                            setInterval(() => {}, 5000);
-                        } else
-                            alert("Error");
-                    })
-                    .catch((error) => {
-                        console.error(error);
+                            clearInterval(intervalId);
+                        });
+
+                    if (check) {
                         check = false;
                         clearInterval(intervalId);
-                    });
-
-                if (check) {
-                    check = false;
-                    clearInterval(intervalId);
-                }
-            }, 2000
+                    }
+                }}
+            ,2000
         );
     }
 
@@ -68,7 +71,7 @@ class PicMe extends Component {
         };
         return (
             <TouchableOpacity onPress = {this.clickMe}>
-                <Text>Test me</Text>
+                <Image source={pic} style={{width: 193, height: 110}}/>
             </TouchableOpacity>
         );
     }
