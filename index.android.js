@@ -4,6 +4,7 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  TextInput,
   View,
   Image,
   TouchableOpacity
@@ -13,7 +14,9 @@ import MapView from 'react-native-maps';
 
 var lib = require("./libs/geolocation-lib");
 
-var myNumber, othersNumber, intervalId;
+var myNumber = -1;
+var othersNumber = -1;
+var intervalId;
 
 var serverResponse = "Nothing";
 //keeping a reference to the object when calling the functions
@@ -27,11 +30,31 @@ var initState = {
 	location_msg: "Unknown Location\n", 
 	dist_msg: "Can't Calculate Distance\n",
 }
-	
-	
-	
-var karamuzaCoord = {longitude:23.79822 , latitude:38.05989 };
 
+var waiting = false;	
+	
+	
+var karamuza = {coords: {longitude:23.79822 , latitude:38.05989 }, allowed: 2};
+
+var meetingPoints;
+
+function doNothing(){
+	alert("Sitting here doing nothing!");
+}
+
+function cancelGame(){
+	waiting = false;
+	return;
+}
+
+function compareInput(input){
+	input = parseInt(input);
+	alert(othersNumber);
+	if (input == othersNumber)
+		alert("Congratulations waiting for your peer do submit his code...");
+	else 
+		alert("Sorry wrong code...");
+}
 	
 function changeLocationMsg(){
 	var message = "Unknown Location\n";
@@ -47,15 +70,26 @@ function changeDistanceMsg(){
 	if(self.state.longitude<0){
 		return;
 	}
-	var d = lib.getDistanceFromLatLonInKm(self.state.latitude, self.state.longitude, karamuzaCoord.latitude, karamuzaCoord.longitude);
+	var d = lib.getDistanceFromLatLonInKm(self.state.latitude, self.state.longitude, karamuza.coords.latitude, karamuza.coords.longitude);
 	//alert(d);
 	self.setState({dist_msg: d});
 	return;
 }
 
-var persistantPost = function(){
+
+
+var persistantPost = function(user_pressed){
 			//increase postcnt
 			//var cnt = self.state.postcnt
+			if (!lib.isPlayerNearHotSpot(self.state.latitude, self.state.longitude,karamuza)){
+				alert("Sorry you can't play. You must be near a hotspot!")
+				return;
+			}
+			if(waiting && user_pressed){
+				alert("You have already asked for a new game");
+				return;
+			}
+			waiting = true;
 			self.setState({postcnt: self.state.postcnt+1});
 			fetch('http://picmetest.herokuapp.com/newGame', {
                     method: 'POST',
@@ -76,24 +110,57 @@ var persistantPost = function(){
 					if (responseJson.yourRandom && responseJson.othersRandom) {
 						myNumber = responseJson.yourRandom;
 						othersNumber = responseJson.othersRandom;
+						alert(othersNumber);
 					}
 					if(responseJson.wait){
-						setTimeout(() => {persistantPost();}, 5000); // passing a reference not a call
+						setTimeout(() => {persistantPost(false);}, 5000); // passing a reference not a call
 					}
 				}
 			)
 }
+
+function getMeetingPoints(){
+	fetch('http://picmetest.herokuapp.com/meetingpoints/', { //how am i supposed to use player id??? i hava an idea...
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
+                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
+                    })
+                })
+	.then((response) => response.json())
+    .then((responseJson) => {
+		alert(responseJson);				
+	})		
+}
 			
- function getHotSpots(){   
+ function markKaramuza(){   
 	return (<MapView.Marker
-		coordinate={{latitude: karamuzaCoord.latitude,
-		longitude: karamuzaCoord.longitude}}
-		title={"title"}
-		description={"description"}
+		coordinate={{latitude: karamuza.coords.latitude,
+		longitude: karamuza.coords.longitude}}
+		title={"Karamuza"}
+		description={"0 active players"}
 	/>)
 
  }
 
+ function markEachMeetingPoint(aMeetingPoint){
+	 return (<MapView.Marker
+		 coordinate = {{latitude: aMeetingPoint.latitude, longitude: longitude.aMeetingPoint.longitude}}
+		 title = {"Name of the meeting point"}
+		 description = {"There are " + aMeetingPoint.activePlayers+ " active players"}
+	 />)
+ }
+ 
+ function markMeetingPoints(meetingPoints){
+	 var result
+	 //for.each markEachMeetingPoint meetingPoints
+	 // push to result 
+	 return result
+ }
+ 
 class PicMe extends Component {
 
 	 constructor(props) {
@@ -124,8 +191,8 @@ class PicMe extends Component {
 						flexDirection: 'column',
 						}}
 			>
-				<TouchableOpacity onPress = {persistantPost}>
-					<Text style={{fontSize: 25}}>PostMe </Text>
+				<TouchableOpacity onPress = {() => {persistantPost(true)}}>
+					<Text style={{fontSize: 25, backgroundColor: 'red'}}  >New Game </Text>
 				</TouchableOpacity>
 				<Text style={{fontSize: 13}}>
 					Server Responded:{"\n"}
@@ -134,17 +201,22 @@ class PicMe extends Component {
 				<Text style={{fontSize: 13}}>
 					TotalPosts:{this.state.postcnt}
 				</Text>
-				<Text style = {{fontSize:30 }}>
+				<Text style = {{fontSize:20 }}>
 					Your Location:{"\n"}
 					{this.state.location_msg} {"\n"}
 					Your Distance from Karamuza:{"\n"}
 					{this.state.dist_msg}{"\n"}
 				</Text>
-				<View style={{width: 200, height: 200}}>
-					<MapView style={styles.map} showsUserLocation={true}>
-						{getHotSpots()}
-					</MapView>
-				</View>
+				<TouchableOpacity onPress = {getMeetingPoints}>
+					<Text style={{fontSize: 25, backgroundColor: 'green'}}  > Fetch HotSpots </Text>
+				</TouchableOpacity>
+				<MapView style={styles.map, {flex: 2}} showsUserLocation={true} followUserLocation={true} fitToElements={true}>
+					{markKaramuza()}
+				</MapView>
+				<TextInput onSubmitEditing={compareInput}>
+					Enter others Number here
+				</TextInput>
+					
 			</View>
 			
 			
