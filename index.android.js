@@ -19,7 +19,18 @@ var serverResponse = "Nothing";
 //keeping a reference to the object when calling the functions
 var self;
 // We had to move functions out of the Component Class!!!
-
+var initState = {
+	res : "Nothing", 
+	postcnt: 0, 
+	latitude: -1, 
+	longitude: -1,
+	location_msg: "Unknown Location\n", 
+	dist_msg: "Can't Calculate Distance\n",
+}
+	
+	
+	
+var karamuzaCoord = {longitude:23.79822 , latitude:38.05989 };
 
 	
 function changeLocationMsg(){
@@ -31,7 +42,17 @@ function changeLocationMsg(){
 	self.setState({location_msg: message});
 	return;
 }	
-	
+
+function changeDistanceMsg(){
+	if(self.state.longitude<0){
+		return;
+	}
+	var d = lib.getDistanceFromLatLonInKm(self.state.latitude, self.state.longitude, karamuzaCoord.latitude, karamuzaCoord.longitude);
+	//alert(d);
+	self.setState({dist_msg: d});
+	return;
+}
+
 var persistantPost = function(){
 			//increase postcnt
 			//var cnt = self.state.postcnt
@@ -63,22 +84,21 @@ var persistantPost = function(){
 			)
 }
 			
-    
-	
+ function getHotSpots(){   
+	return (<MapView.Marker
+		coordinate={{latitude: karamuzaCoord.latitude,
+		longitude: karamuzaCoord.longitude}}
+		title={"title"}
+		description={"description"}
+	/>)
 
+ }
 
 class PicMe extends Component {
-	
-    testMe () {
-        // setting check to false leads to infinite loop
-        check = false;
-        alert(check);
-		testMe2();
-    }
 
 	 constructor(props) {
 		super(props);
-		this.state = {res : "Nothing", postcnt: 0, location_msg: "Unknown Location\n"};
+		this.state = initState;
 		setInterval(
 			() => {
 				navigator.geolocation.getCurrentPosition(
@@ -87,7 +107,8 @@ class PicMe extends Component {
 						self.setState({latitude: position.coords.latitude});
 					}
 				);
-				changeLocationMsg()
+				changeLocationMsg();
+				changeDistanceMsg();
 			}, 2000)
 	 }
     
@@ -96,9 +117,13 @@ class PicMe extends Component {
             uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
         };*/
 		self = this; //get reference of the class
-		var a = lib.getDistanceFromLatLonInKm(1,2,3,5);
+		//var a = lib.getDistanceFromLatLonInKm(1,2,3,5);
         return (
-            <View >
+            <View style={{
+						flex: 1,
+						flexDirection: 'column',
+						}}
+			>
 				<TouchableOpacity onPress = {persistantPost}>
 					<Text style={{fontSize: 25}}>PostMe </Text>
 				</TouchableOpacity>
@@ -110,9 +135,18 @@ class PicMe extends Component {
 					TotalPosts:{this.state.postcnt}
 				</Text>
 				<Text style = {{fontSize:30 }}>
-					{this.state.location_msg}
+					Your Location:{"\n"}
+					{this.state.location_msg} {"\n"}
+					Your Distance from Karamuza:{"\n"}
+					{this.state.dist_msg}{"\n"}
 				</Text>
+				<View style={{width: 200, height: 200}}>
+					<MapView style={styles.map} showsUserLocation={true}>
+						{getHotSpots()}
+					</MapView>
+				</View>
 			</View>
+			
 			
             /*<TouchableOpacity onPress = {this.testMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
