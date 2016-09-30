@@ -59,10 +59,20 @@ class PicMe extends Component {
                     if (check) {
                         check = false;
                         clearInterval(intervalId);
+                        // nothing gets executed here
+                        // check = false;
+                        // alert(check);
                     }
                 }}
             ,2000
         );
+        check = false;
+    }
+
+    testMe () {
+        // setting check to false leads to infinite loop
+        check = false;
+        alert(check);
     }
 
     render() {
@@ -70,9 +80,14 @@ class PicMe extends Component {
             uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
         };
         return (
+            <View>
             <TouchableOpacity onPress = {this.clickMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
             </TouchableOpacity>
+            <TouchableOpacity onPress = {this.testMe}>
+                <Image source={pic} style={{width: 193, height: 110}}/>
+            </TouchableOpacity>
+            </View>
         );
     }
 
