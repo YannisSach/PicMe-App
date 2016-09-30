@@ -11,75 +11,55 @@ import {
 
 //import MapView from 'react-native-maps';
 
-var myNumber, othersNumber;
+var myNumber, othersNumber, intervalId;
+
+var check = false;
 
 class PicMe extends Component {
 
-    /*clickMe() {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          fetch('http://192.168.1.9:3000/newGame', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            })
-          })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            alert(responseJson);
-          })
-          .catch((error) => { console.error(error); });
-        });
-    }*/
+    clickMe() {
+        intervalId = setInterval(
+            () => {
+                fetch('http://picmetest.herokuapp.com/newGame', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
+                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
+                    })
+                }).then((response) => response.json())
+                    .then((responseJson) => {
+                        //alert(responseJson.yourRandom);
+                        setInterval(() => {}, 5000);
+                        if (responseJson.wait && responseJson.yourRandom) {
+                            myNumber = responseJson.yourRandom;
+                            othersNumber = responseJson.othersRandom;
+                            alert(myNumber);
+                            setInterval(() => {}, 5000);
+                        } else if (responseJson.wait) {
+                            check = false;
+                            alert("two");
+                        } else if (!responseJson.wait) {
+                            check = true;
+                            alert(myNumber + " " + othersNumber);
+                            setInterval(() => {}, 5000);
+                        } else
+                            alert("Error");
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        check = false;
+                        clearInterval(intervalId);
+                    });
 
-    testMe() {
-        fetch('http://picmetest.herokuapp.com/newGame', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-            })
-        })
-            .then((response) => response.json())
-            .then((responseJson) => {
-                alert(responseJson.wait);
-                alert(responseJson.yourRandom);
-                if (responseJson.wait && responseJson.yourRandom) {
-                    myNumber = responseJson.yourRandom;
-                    othersNumber = responseJson.othersRandom;
-                    // sleep for 2 seconds
-                    setTimeout(
-                        () => {
-                            console.log('I do not leak!');
-                            alert("onene");
-                            this.testMe();
-                        },
-                        5000
-                    );
-                } else if (responseJson.wait) {
-                    // sleep for 2 seconds
-                    setTimeout(
-                        () => {
-                            console.log('I do not leak!');
-                            alert("sakis");
-                            this.testMe();
-                        },
-                        500
-                    );
-                } else if (!responseJson.wait) {
-                    alert(myNumber + " " + othersNumber);
-                } else
-                    alert("Error");
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+                if (check) {
+                    check = false;
+                    clearInterval(intervalId);
+                }
+            }, 2000
+        );
     }
 
     render() {
@@ -87,8 +67,8 @@ class PicMe extends Component {
             uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
         };
         return (
-            <TouchableOpacity onPress ={this.testMe()}>
-                <Image source={pic} style={{width: 193, height: 110}}/>
+            <TouchableOpacity onPress = {this.clickMe}>
+                <Text>Test me</Text>
             </TouchableOpacity>
         );
     }
