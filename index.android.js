@@ -14,7 +14,8 @@ import {
 var myNumber, othersNumber, intervalId;
 
 var check = false;
-
+var serverResponse = "Nothing";
+var self;
 // We had to move functions out of the Component Class!!!
 
 var testMe2= function(){
@@ -22,44 +23,73 @@ var testMe2= function(){
 		
 	}
 
+var simplePost = function(){
+			alert("NewPost");
+			fetch('http://picmetest.herokuapp.com/newGame', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
+                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
+                    })
+                })
+			.then((response) => response.json())
+                .then((responseJson) => {
+					serverResponse = "wait : " + responseJson.wait + "\nYourNumber : " + responseJson.yourRandom + "\nOthersNumber : " + responseJson.othersNumber;
+					//alert(serverResponse);
+					//this.state = serverResponse;
+					self.setState({res: serverResponse}); //print answer
+					if (responseJson.yourRandom && responseJson.othersRandom) {
+						myNumber = responseJson.yourRandom;
+						othersNumber = responseJson.othersRandom;
+					}
+					if(responseJson.wait){
+						setTimeout(() => {simplePost();}, 5000);
+					}
+				}
+			)
+}
+			
+    
+	
+
+/*	
 var clickMe = function() {
-        intervalId = setInterval(
-            () => {
-                if (!check) {
-                    fetch('http://picmetest.herokuapp.com/newGame', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                            playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-                        })
-                    }).then((response) => response.json())
-                        .then((responseJson) => {
-                            //console.log(responseJson.yourRandom);
-                            //setInterval(() => {}, 5000);
-                            if (responseJson.yourRandom && responseJson.othersRandom) {
-                                myNumber = responseJson.yourRandom;
-                                othersNumber = responseJson.othersRandom;
-                                console.log(myNumber);
-                                check = !responseJson.wait;
-                                //setInterval(() => {}, 5000);
-                            } else if (responseJson.wait) {
-                                check = false;
+                 fetch('http://picmetest.herokuapp.com/newGame', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
+                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
+                    })
+                }).then((response) => response.json())
+                    .then((responseJson) => {
+                    //console.log(responseJson.yourRandom);
+                    //setInterval(() => {}, 5000);
+					serverResponse = responseJsong
+                    if (responseJson.yourRandom && responseJson.othersRandom) {
+						myNumber = responseJson.yourRandom;
+                        othersNumber = responseJson.othersRandom;
+                        //setInterval(() => {}, 5000);
+                        } else if (responseJson.wait) {
+
                                 console.log("two");
-                            } else if (!responseJson.wait) {
+                        } else if (!responseJson.wait) {
                                 check = true;
                                 console.log(myNumber + " " + othersNumber);
                                 //setInterval(() => {}, 5000);
-                            } else
+                        } else
                                 alert("Error");
-                        })
-                        .catch((error) => {
+                    })
+                    .catch((error) => {
                             console.error(error);
                             check = false;
                             clearInterval(intervalId);
-                        });
+                    });
 
                     if (check) {
                         check = false;
@@ -73,7 +103,7 @@ var clickMe = function() {
         );
         check = false;
     }
-	
+*/	
 	
 class PicMe extends Component {
 	
@@ -84,15 +114,26 @@ class PicMe extends Component {
 		testMe2();
     }
 
-    render() {
+	 constructor(props) {
+		super(props);
+		this.state = {res : "Nothing"};
+	 }
+    
+	render() {
         /*let pic = {
             uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
         };*/
+		self = this;
         return (
-            
-            <TouchableOpacity onPress = {testMe2}>
-                <Text>Blabla </Text>
-            </TouchableOpacity>
+            <View >
+				<TouchableOpacity onPress = {simplePost.bind(this)}>
+					<Text style={{fontSize: 25}}>PostMe </Text>
+				</TouchableOpacity>
+				<Text style={{fontSize: 25}}>
+					Server Responded:{"\n"}
+						{this.state.res}
+				</Text>
+			</View>
             /*<TouchableOpacity onPress = {this.testMe}>
                 <Image source={pic} style={{width: 193, height: 110}}/>
             </TouchableOpacity>*/
@@ -102,6 +143,7 @@ class PicMe extends Component {
 
 }
 
+				
 const styles = StyleSheet.create({
   container: {
     flex: 1,
