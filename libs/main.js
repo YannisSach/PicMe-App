@@ -165,7 +165,7 @@ function getMeetingPoints(){
 	 return result
  }
  
-class PicMe extends Component {
+var Main = React.createClass({
 
 	 constructor(props) {
 		super(props);
@@ -232,7 +232,7 @@ class PicMe extends Component {
         );
     }
 
-}
+});
 
 				
 const styles = StyleSheet.create({
@@ -260,5 +260,6 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
+)
 
-AppRegistry.registerComponent('PicMe', () => PicMe);
+module.exports = Main
