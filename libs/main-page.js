@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import MapView from 'react-native-maps';
+import CancelButton from './cancelButton';
 
 var lib = require("./geolocation-lib");
 
@@ -119,23 +120,6 @@ var persistantPost = function(user_pressed){
 			)
 }
 
-function getMeetingPoints(){
-	fetch('http://picmetest.herokuapp.com/meetingpoints/'+playerId, { //how am i supposed to use player id??? i hava an idea...
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-                    })
-                })
-	.then((response) => response.json())
-    .then((responseJson) => {
-		alert(responseJson);				
-	})		
-}
-			
  function markKaramuza(){   
 	return (<MapView.Marker
 		coordinate={{latitude: karamuza.coords.latitude,
@@ -146,24 +130,6 @@ function getMeetingPoints(){
 
  }
 
- function markMeetingPoint(aMeetingPoint){
-	 return (<MapView.Marker
-		 coordinate = {{latitude: aMeetingPoint.latitude, longitude: longitude.aMeetingPoint.longitude}}
-		 title = {"Name of the meeting point"}
-		 description = {"There are " + aMeetingPoint.activePlayers+ " active players"}
-	 />)
- }
- 
- function markAllMeetingPoints(meetingPoints){
-	 var meetingPoints;
-	 var result;
-	 meetingPoints = meetingPoints.map(markMeetingPoint);
-	 alert(meetingPoints.length); //print array size
-	 for(i=0; i<meetingPoints.length; i++){
-		 result.push(meetingPoints);
-	 }
-	 return result
- }
  
 export default class Main extends Component{
 
@@ -214,7 +180,7 @@ export default class Main extends Component{
 				</MapView>
 				<TextInput onSubmitEditing={(text) => {compareInput(text.nativeEvent.text);}} placeholder="Enter Others Number Here" >
 				</TextInput>
-					
+				<CancelButton afterCancel = {() => alert("Game Canceled") } playerId={playerId} />	
 			</View>
         );
     }
