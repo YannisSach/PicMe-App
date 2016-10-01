@@ -14,7 +14,7 @@ import MapView from 'react-native-maps';
 
 var lib = require("./libs/geolocation-lib");
 
-var playerId = '57ed6f83dcba0f1f2b138bb9';
+var playerId = '57efe77cfb21a31d2810a6e9';
 var myNumber = -1;
 var othersNumber = -1;
 var intervalId;
@@ -49,7 +49,7 @@ function cancelGame(){
 }
 
 function compareInput(input){
-	alert(othersNumber);
+	
 	if (input == othersNumber)
 		alert("Congratulations waiting for your peer do submit his code...");
 	else 
@@ -91,16 +91,16 @@ var persistantPost = function(user_pressed){
 			}
 			waiting = true;
 			self.setState({postcnt: self.state.postcnt+1});
-			fetch('http://picmetest.herokuapp.com/newGame/'+ playerId, {
+			fetch('http://picmetest.herokuapp.com/game/newGame/'+ playerId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-                        playerId: '57ed6f83dcba0f1f2b138bb9' // yanis
-                    })
-                })
+						meeting: '57efd564f36d2867db3b5993'
+				})
+			})
 			.then((response) => response.json())
                 .then((responseJson) => {
 					serverResponse = "wait : " + responseJson.wait + "\nYourNumber : " + responseJson.yourRandom + "\nOthersNumber : " + responseJson.othersRandom;
@@ -197,7 +197,7 @@ class PicMe extends Component {
 						}}
 			>
 				<TouchableOpacity onPress = {() => {persistantPost(true)}}>
-					<Text style={{fontSize: 25, backgroundColor: 'red'}}  >New Game </Text>
+					<Text style={{fontSize: 25, backgroundColor: 'red'}}  >NewGame </Text>
 				</TouchableOpacity>
 				<Text style={{fontSize: 13}}>
 					Server Responded:{"\n"}
@@ -218,8 +218,7 @@ class PicMe extends Component {
 				<MapView style={styles.map, {flex: 2}} showsUserLocation={true} followUserLocation={true} fitToElements={true}>
 					{markKaramuza()}
 				</MapView>
-				<TextInput onSubmitEditing={(text) => {compareInput(text)}}>
-					Enter others Number here
+				<TextInput onSubmitEditing={(text) => {compareInput(text.nativeEvent.text);}} placeholder="Enter Others Number Here" >
 				</TextInput>
 					
 			</View>
