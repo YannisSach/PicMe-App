@@ -12,7 +12,7 @@ import {
 
 import MapView from 'react-native-maps';
 
-var lib = require("./libs/geolocation-lib");
+var lib = require("./geolocation-lib");
 
 var playerId = '57efe77cfb21a31d2810a6e9';
 var myNumber = -1;
@@ -165,7 +165,7 @@ function getMeetingPoints(){
 	 return result
  }
  
-var Main = React.createClass({
+export default class Main extends Component{
 
 	 constructor(props) {
 		super(props);
@@ -184,11 +184,6 @@ var Main = React.createClass({
 			}, 2000)
 	 }
     render() {
-        /*let pic = {
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
-        };*/
-		//self = this; //get reference of the class
-		//var a = lib.getDistanceFromLatLonInKm(1,2,3,5);
         return (
             <View style={{
 						flex: 1,
@@ -221,36 +216,13 @@ var Main = React.createClass({
 				</TextInput>
 					
 			</View>
-			
-			
-            /*<TouchableOpacity onPress = {this.testMe}>
-                <Image source={pic} style={{width: 193, height: 110}}/>
-            </TouchableOpacity>*/
-            
         );
     }
 	
 
-});
-
-				
+}
+			
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
   map: {
     position: 'absolute',
     top: 0,
@@ -259,6 +231,4 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
-)
 
-module.exports = Main
