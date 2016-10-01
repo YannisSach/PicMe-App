@@ -40,10 +40,12 @@ var karamuza = {coords: {longitude:23.79822 , latitude:38.05989 }, allowed: 2};
 
 var meetingPoints;
 
+//for debugging purposes
 function doNothing(){
 	alert("Sitting here doing nothing!");
 }
 
+//to be afterCancel action for the cancel button
 function cancelGame(){
 	waiting = false;
 	return;
@@ -76,8 +78,6 @@ function changeDistanceMsg(){
 	self.setState({dist_msg: d});
 	return;
 }
-
-
 
 var persistantPost = function(user_pressed){
 			//increase postcnt

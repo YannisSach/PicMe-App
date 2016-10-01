@@ -22,7 +22,7 @@ export default class LoginPage extends Component {
           self = this;
         }
 
-   handlePress() {
+   loginPost() {
       fetch('http://picmetest.herokuapp.com/player/login', {
               method: 'POST',
               headers: {
@@ -51,73 +51,43 @@ export default class LoginPage extends Component {
 
   }
 
+	render() {
+	return (
+		  <View style={{paddingLeft: 10, }}>
 
+			<Text style={{paddingBottom : 10,}}>LOGIN</Text>
+			  <View>
+				  <TextInput style={{height: 50, borderColor: 'gray', borderWidth: 1}}
+				  onSubmitEditing={
+					(text) => {
+					  alert(text.nativeEvent.text);
+					  //this.state.username = text
+					  this.setState({username: text.nativeEvent.text.trim()});
+					}
+				}/>
+			  
+			  <Text style={{paddingBottom : 10,}}>PASSWORD</Text>
+	  
+				  <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
+				   onSubmitEditing={(text) => {
+					
+					//this.state.password = text
+					this.setState({password: text.nativeEvent.text.trim()});
+					alert(text.nativeEvent.text);
+				  } }
+				  />
+			  </View>
 
-
-render() {
-return (
-      <View style={{paddingLeft: 10, }}>
-
-        <Text style={{paddingBottom : 10,}}>LOGIN</Text>
-          <View>
-              <TextInput style={{height: 50, borderColor: 'gray', borderWidth: 1}}
-              onSubmitEditing={
-                (text) => {
-                  alert(text.nativeEvent.text);
-                  //this.state.username = text
-				  this.setState({username: text.nativeEvent.text.trim()});
-                }
-            }/>
-          
-          <Text style={{paddingBottom : 10,}}>PASSWORD</Text>
-  
-              <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
-               onSubmitEditing={(text) => {
-                
-                //this.state.password = text
-				this.setState({password: text.nativeEvent.text.trim()});
-				alert(text.nativeEvent.text);
-              } }
-              />
-          </View>
-
-        <Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
-          style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress= {() => 
-          {alert("hello");
-            // alert(this.state.username)
-            // alert(this.state.password
-            this.handlePress();
-          }
-		  }>
-          PressMe 
-        </Button>
-
-
-        <Text style={{paddingBottom : 10,}}>SIGNUP</Text>
-
-          <View>
-              <TextInput style={{height: 50, borderColor: 'gray', borderWidth: 1}}
-              onSubmitEditing={(text) => this.state.usernamesignup = text }/>
-          </View>
-        <Text style={{paddingBottom : 10,}}>PASSWORD</Text>
-          <View>
-              <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
-               onSubmitEditing={(text) => this.state.passwordsignup_1 = text }
-              />
-          </View>
-          <Text style={{paddingBottom : 10,}}> REPEAT  PASSWORD</Text>
-          <View>
-              <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
-               onSubmitEditing={(text) => this.state.passwordsignup_2 = text }
-              />
-          </View>
-
-        <Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
-          style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress={this.handlePress_signup}>
-          PressMe 
-        </Button>
-
-      </View>
+			<Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
+			  style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress= {() => 
+			  {alert("hello");
+				// alert(this.state.username)
+				// alert(this.state.password
+				this.loginPost();
+			  }
+			  }>
+			  PressMe 
+			</Button>
     );
   }
 }
