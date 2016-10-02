@@ -11,8 +11,9 @@ import {
 } from 'react-native';
 
 import MapView from 'react-native-maps';
-import CancelButton from './cancelButton';
-import NewGameButton from './newGameButton';
+import CancelButton from './cancel-button';
+import NewGameButton from './new-game-button';
+import getMeetingPointMarkers from './meeting-points-lib'
 
 var lib = require("./geolocation-lib");
 
@@ -79,46 +80,6 @@ function changeDistanceMsg(){
 	return;
 }
 
-var persistantPost = function(user_pressed){
-			//increase postcnt
-			//var cnt = self.state.postcnt
-			if (!lib.isPlayerNearHotSpot(self.state.latitude, self.state.longitude,karamuza)){
-				alert("Sorry you can't play. You must be near a hotspot!")
-				return;
-			}
-			if(waiting && user_pressed){
-				alert("You have already asked for a new game");
-				return;
-			}
-			waiting = true;
-			self.setState({postcnt: self.state.postcnt+1});
-			fetch('http://picmetest.herokuapp.com/game/newGame/'+ playerId, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        //playerId: '57ed6f27dcba0f1f2b138b98' // eugene
-						meeting: '57efd564f36d2867db3b5993'
-				})
-			})
-			.then((response) => response.json())
-                .then((responseJson) => {
-					serverResponse = "wait : " + responseJson.wait + "\nYourNumber : " + responseJson.yourRandom + "\nOthersNumber : " + responseJson.othersRandom;
-					//alert(serverResponse);
-					//this.state = serverResponse;
-					self.setState({res: serverResponse}); //print answer
-					if (responseJson.yourRandom && responseJson.othersRandom) {
-						myNumber = responseJson.yourRandom;
-						othersNumber = responseJson.othersRandom;
-						alert(othersNumber);
-					}
-					if(responseJson.wait){
-						setTimeout(() => {persistantPost(false);}, 5000); // passing a reference not a call
-					}
-				}
-			)
-}
 
  function markKaramuza(){   
 	return (<MapView.Marker
@@ -184,7 +145,7 @@ export default class MainPage extends Component{
 					<Text style={{fontSize: 25, backgroundColor: 'green'}}  > Fetch HotSpots </Text>
 				</TouchableOpacity>
 				<MapView style={styles.map, {flex: 2}} showsUserLocation={true} followUserLocation={true} fitToElements={true}>
-					{markKaramuza()}
+					{getMeetingPointMarkers("57efe77cfb21a31d2810a6e9")}
 				</MapView>
 				<TextInput onSubmitEditing={(text) => {compareInput(text.nativeEvent.text);}} placeholder="Enter Others Number Here" >
 				</TextInput>
