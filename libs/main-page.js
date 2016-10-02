@@ -12,13 +12,13 @@ import {
 
 import MapView from 'react-native-maps';
 import CancelButton from './cancelButton';
+import NewGameButton from './newGameButton';
 
 var lib = require("./geolocation-lib");
 
 var playerId = '57efe77cfb21a31d2810a6e9';
 var myNumber = -1;
 var othersNumber = -1;
-var intervalId;
 
 var serverResponse = "Nothing";
 //keeping a reference to the object when calling the functions
@@ -130,25 +130,41 @@ var persistantPost = function(user_pressed){
 
  }
 
+ function updatePosition(position){
+	alert("Position Updated")
+	self.setState({longitude: position.coords.longitude});
+	self.setState({latitude: position.coords.latitude});
+	changeLocationMsg();
+	changeDistanceMsg();
+ }
  
-export default class Main extends Component{
+export default class MainPage extends Component{
+	watchID: number
 
-	 constructor(props) {
+	constructor(props) {
 		super(props);
 		self = this;
 		this.state = initState;
-		setInterval(
-			() => {
-				navigator.geolocation.getCurrentPosition(
-					(position) => {
-						self.setState({longitude: position.coords.longitude});
-						self.setState({latitude: position.coords.latitude});
-					}
-				);
-				changeLocationMsg();
-				changeDistanceMsg();
-			}, 2000)
 	 }
+	 
+	componentDidMount(){
+		navigator.geolocation.getCurrentPosition(
+					(newPosition) => {
+						updatePosition(newPosition)
+					},
+					(error) => alert(error.message),
+					{enableHighAccuracy: true, timeout: 500, maximumAge: 1000}
+		);
+		
+		this.watchID = navigator.geolocation.watchPosition((newPosition) => {
+			updatePosition(newPosition)
+		}); 
+	 }
+	 
+	componentWillUnmount(){
+		navigator.geolocation.clearWatch(this.watchID);
+	}
+	
     render() {
         return (
             <View style={{
@@ -156,23 +172,15 @@ export default class Main extends Component{
 						flexDirection: 'column',
 						}}
 			>
-				<TouchableOpacity onPress = {() => {persistantPost(true)}}>
-					<Text style={{fontSize: 25, backgroundColor: 'red'}}  >NewGame </Text>
-				</TouchableOpacity>
-				<Text style={{fontSize: 13}}>
-					Server Responded:{"\n"}
-						{this.state.res}
-				</Text>
-				<Text style={{fontSize: 13}}>
-					TotalPosts:{this.state.postcnt}
-				</Text>
+				<NewGameButton playerId = {playerId} afterNewGame = {(a) => alert(a)} debug={true}/>
+				<CancelButton  playerId={playerId} afterCancel = {() => alert("Game Canceled") } />	
 				<Text style = {{fontSize:20 }}>
 					Your Location:{"\n"}
 					{this.state.location_msg} {"\n"}
 					Your Distance from Karamuza:{"\n"}
 					{this.state.dist_msg}{"\n"}
 				</Text>
-				<TouchableOpacity onPress = {getMeetingPoints}>
+				<TouchableOpacity>
 					<Text style={{fontSize: 25, backgroundColor: 'green'}}  > Fetch HotSpots </Text>
 				</TouchableOpacity>
 				<MapView style={styles.map, {flex: 2}} showsUserLocation={true} followUserLocation={true} fitToElements={true}>
@@ -180,12 +188,9 @@ export default class Main extends Component{
 				</MapView>
 				<TextInput onSubmitEditing={(text) => {compareInput(text.nativeEvent.text);}} placeholder="Enter Others Number Here" >
 				</TextInput>
-				<CancelButton afterCancel = {() => alert("Game Canceled") } playerId={playerId} />	
 			</View>
         );
     }
-	
-
 }
 			
 const styles = StyleSheet.create({

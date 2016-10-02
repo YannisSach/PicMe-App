@@ -7,9 +7,6 @@ import Button from 'react-native-button';
 var initState = {
   username: "",
   password: "",
-  passwordsignup_1: "", 
-  passwordsignup_2: "", 
-  usernamesignup: "",
 }
 
 var self; 
@@ -65,7 +62,6 @@ export default class LoginPage extends Component {
 					  this.setState({username: text.nativeEvent.text.trim()});
 					}
 				}/>
-			  
 			  <Text style={{paddingBottom : 10,}}>PASSWORD</Text>
 	  
 				  <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
@@ -77,17 +73,11 @@ export default class LoginPage extends Component {
 				  } }
 				  />
 			  </View>
-
 			<Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
-			  style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress= {() => 
-			  {alert("hello");
-				// alert(this.state.username)
-				// alert(this.state.password
-				this.loginPost();
-			  }
-			  }>
+			  style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress= {() => {this.loginPost();}}>
 			  PressMe 
 			</Button>
+		</View>
     );
   }
 }

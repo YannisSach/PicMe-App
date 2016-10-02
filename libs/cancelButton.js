@@ -45,7 +45,7 @@ export default class CancelButton extends Component{
 		return(
 		<View>
 			<TouchableOpacity onPress = {() => {postCancel(this.props.playerId),this.props.afterCancel.call()}}>
-					<Text style={{fontSize: 25, backgroundColor: 'green'}}  >Cancel Game </Text>
+					<Text style={{fontSize: 25, backgroundColor: 'red'}}  >Cancel Game </Text>
 			</TouchableOpacity>
 		</View>)
 	}
