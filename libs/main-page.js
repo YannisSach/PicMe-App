@@ -13,7 +13,7 @@ import {
 import MapView from 'react-native-maps';
 import CancelButton from './cancel-button';
 import NewGameButton from './new-game-button';
-import getMeetingPointMarkers from './meeting-points-lib'
+import MeetingPointMap from './meeting-points-map'
 
 var lib = require("./geolocation-lib");
 
@@ -35,11 +35,8 @@ var initState = {
 }
 
 var waiting = false;	
-	
-	
-var karamuza = {coords: {longitude:23.79822 , latitude:38.05989 }, allowed: 2};
 
-var meetingPoints;
+var meetingPointMarkers :MapView.Marker;
 
 //for debugging purposes
 function doNothing(){
@@ -80,17 +77,6 @@ function changeDistanceMsg(){
 	return;
 }
 
-
- function markKaramuza(){   
-	return (<MapView.Marker
-		coordinate={{latitude: karamuza.coords.latitude,
-		longitude: karamuza.coords.longitude}}
-		title={"Karamuza"}
-		description={"0 active players"}
-	/>)
-
- }
-
  function installWatch(){
 	self.watchID = navigator.geolocation.watchPosition((newPosition) => {
 			//alert ("Watch updated position");
@@ -122,7 +108,7 @@ export default class MainPage extends Component{
 						updatePosition(newPosition)
 					},
 					(error) => alert(error.message),
-					{enableHighAccuracy: true, timeout: 500, maximumAge: 1000}
+					{enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
 		);
 	 }
 	 
@@ -156,25 +142,14 @@ export default class MainPage extends Component{
 					},
 					(error) => alert(error.message),
 					{enableHighAccuracy: true}
-		)}>
+				)}>
 					<Text style={{fontSize: 25, backgroundColor: 'green'}}  > Force Update Location </Text>
 				</TouchableOpacity>
-				<MapView style={styles.map, {flex: 2}} showsUserLocation={true} followUserLocation={true} fitToElements={true}>
-				</MapView>
+				<MeetingPointMap playerId = {playerId} />
 				<TextInput onSubmitEditing={(text) => {compareInput(text.nativeEvent.text);}} placeholder="Enter Others Number Here" >
 				</TextInput>
 			</View>
         );
     }
 }
-			
-const styles = StyleSheet.create({
-  map: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
 
