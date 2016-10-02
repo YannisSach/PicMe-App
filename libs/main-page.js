@@ -91,8 +91,15 @@ function changeDistanceMsg(){
 
  }
 
+ function installWatch(){
+	self.watchID = navigator.geolocation.watchPosition((newPosition) => {
+			//alert ("Watch updated position");
+			updatePosition(newPosition)
+		},(error) => alert(error.message),{enableHighAccuracy: true, timeout: 5000, maximumAge: 1000, distanceFilter: 0});  
+ }
+ 
  function updatePosition(position){
-	alert("Position Updated")
+	//alert("Position Updated")
 	self.setState({longitude: position.coords.longitude});
 	self.setState({latitude: position.coords.latitude});
 	changeLocationMsg();
@@ -106,6 +113,7 @@ export default class MainPage extends Component{
 		super(props);
 		self = this;
 		this.state = initState;
+		installWatch(); 
 	 }
 	 
 	componentDidMount(){
@@ -116,11 +124,9 @@ export default class MainPage extends Component{
 					(error) => alert(error.message),
 					{enableHighAccuracy: true, timeout: 500, maximumAge: 1000}
 		);
-		
-		this.watchID = navigator.geolocation.watchPosition((newPosition) => {
-			updatePosition(newPosition)
-		}); 
 	 }
+	 
+	 
 	 
 	componentWillUnmount(){
 		navigator.geolocation.clearWatch(this.watchID);
@@ -141,11 +147,19 @@ export default class MainPage extends Component{
 					Your Distance from Karamuza:{"\n"}
 					{this.state.dist_msg}{"\n"}
 				</Text>
-				<TouchableOpacity>
-					<Text style={{fontSize: 25, backgroundColor: 'green'}}  > Fetch HotSpots </Text>
+				<TouchableOpacity onPress = {()=>getMeetingPointMarkers("57efe77cfb21a31d2810a6e9")}>
+					<Text style={{fontSize: 25, backgroundColor: 'blue'}}  > Fetch HotSpots </Text>
+				</TouchableOpacity>
+				<TouchableOpacity onPress = {()=> navigator.geolocation.getCurrentPosition(
+					(newPosition) => {
+						updatePosition(newPosition)
+					},
+					(error) => alert(error.message),
+					{enableHighAccuracy: true}
+		)}>
+					<Text style={{fontSize: 25, backgroundColor: 'green'}}  > Force Update Location </Text>
 				</TouchableOpacity>
 				<MapView style={styles.map, {flex: 2}} showsUserLocation={true} followUserLocation={true} fitToElements={true}>
-					{getMeetingPointMarkers("57efe77cfb21a31d2810a6e9")}
 				</MapView>
 				<TextInput onSubmitEditing={(text) => {compareInput(text.nativeEvent.text);}} placeholder="Enter Others Number Here" >
 				</TextInput>
