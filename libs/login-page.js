@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { AppRegistry, TextInput ,View, Text} from 'react-native';
+import { AppRegistry, TextInput ,View, Text, Navigator} from 'react-native';
 import Button from 'react-native-button';
-
+import MainPage from './main-page';
 
 
 var initState = {
@@ -9,10 +9,15 @@ var initState = {
     password: "",
 }
 
+var next_route = {title: 'MainPage', index: 1};
+var navigator;
 var self;
 
 export default class LoginPage extends Component {
-
+	 propTypes: {
+        navigator: React.PropTypes.navigator.isRequired, //the Id of the player to cancel the game
+    }
+	
     constructor(props){ //initialixation of the object
         super(props);
         this.state = initState;
@@ -33,10 +38,12 @@ export default class LoginPage extends Component {
             .then((response) => response.json())
             .then((responseJson) => {
                     if (responseJson.success) {
-                        alert(responseJson.playerId);
+                        alert("Correct Password");
                     }
                     else {
-                        alert(responseJson.msg);
+                        alert("Wrong username or password");
+						navigator = this.props.navigator;
+						navigator.replace(next_route);
                     }
                 }
             )
@@ -50,11 +57,11 @@ export default class LoginPage extends Component {
 
     render() {
         return (
-            <View style={{paddingLeft: 10, }}>
+            <View  style={{padding: 50,flex:0}} >
 
-                <Text style={{paddingBottom : 10,}}>LOGIN</Text>
+                <Text >LOGIN</Text>
                 <View>
-                    <TextInput style={{height: 50, borderColor: 'gray', borderWidth: 1}}
+                    <TextInput style={{ borderColor: 'gray', borderWidth: 1}}
                                onSubmitEditing={
                                    (text) => {
                                        alert(text.nativeEvent.text);
@@ -62,9 +69,9 @@ export default class LoginPage extends Component {
                                        this.setState({username: text.nativeEvent.text.trim()});
                                    }
                                }/>
-                    <Text style={{paddingBottom : 10,}}>PASSWORD</Text>
+                    <Text >PASSWORD</Text>
 
-                    <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
+                    <TextInput style={{borderColor: 'red', borderWidth: 1, }}
                                onSubmitEditing={(text) => {
 
                                    //this.state.password = text
@@ -73,8 +80,8 @@ export default class LoginPage extends Component {
                                } }
                     />
                 </View>
-                <Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
-                        style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress= {() => {this.loginPost();}}>
+                <Button containerStyle={{height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
+                        style={{fontSize: 20, color: 'red'}} onPress= {() => {this.loginPost();}}>
                     PressMe
                 </Button>
             </View>
