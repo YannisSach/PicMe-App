@@ -20,7 +20,7 @@ var lib = require("./geolocation-lib");
 var playerId = '57efe77cfb21a31d2810a6e9';
 var myNumber = -1;
 var othersNumber = -1;
-
+var karamuza = {coords: {longitude:23.79822 , latitude:38.05989 }, allowed: 2};
 var serverResponse = "Nothing";
 //keeping a reference to the object when calling the functions
 var self;
