@@ -1,56 +1,67 @@
 /* 
-A simple component for socket testing
-*/
+   A simple component for socket testing
+ */
+
+import React, { Component } from 'react';
+window.navigator.userAgent = 'ReactNative';
+var io = require('socket.io-client/socket.io');
+
+import {
+    TextInput,
+    Text,
+    Websocket,
+    View,
+} from 'react-native';
+
 var self;
 var initState = {
-	socket_message: "Haven't received anything yet..."
+    socket_message: "Haven't received anything yet..."
 }
-var ws;
+var socket
+;
 
-function sendToServer(msg){
-	ws.send(msg);
-	alert("Message sent!")
+function sendToServer(){
+    socket.emit('newGame', { playerId: "57efeb36a61b0f1590e57355", meeting: '57efd564f36d2867db3b5993' }); 
+    alert("Message sent!")
 }
 
-function initWebsocket{
-	var ws = new WebSocket('ws://host.com/path');
-	ws.onopen = () => {
-		alert("New socket created");
-	};
-
-	ws.onmessage = (e) => {
-		self.setState({socket_message: e.data});
-	};
-
-	ws.onerror = (e) => {
-	alert(e.message);
-	};
-
-	ws.onclose = (e) => {
-	alert(e.code, e.reason);
-	};
+function initWebsocket(){
+    socket = io.connect('http://192.168.1.9:8000', {transports: ['websocket']});
+    
+    // Connect! 
+    //socket.connect();
+    
+    // An event to be fired on connection to socket 
+    socket.on('connect', () => {
+	console.log('Wahey -> connected!');
+    });
+    
+    // Event called when 'someEvent' it emitted by server 
+    socket.on('wait', (data) => {
+	alert(data.wait)
+    });
 }
 
 export default class Socket extends Component {
-	
-	
+    
+    
     constructor(props){
         super(props);
         this.state = initState;
         self = this;
-		initWebsocket();
+	initWebsocket();
     }
 
-	
+    
     render() {
         return (
-           <View>
-			<TextInput placeholder="Send a message to server"  onSubmitEditing={(text) => {sendToServer(text.nativeEvent.text)}}/>
-			<Text>
-				Server said:{"\n"}
-				{this.state.socket_message}
-			</Text>
-		   </View>
+	    <View>
+	    <TextInput placeholder="Send a message to server"  onSubmitEditing={(text) => {sendToServer()}}/>
+	    <Text>
+	    Server said:{"\n"}
+	    {this.state.socket_message}
+	    </Text>
+	    </View>
         );
     }
 }

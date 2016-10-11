@@ -33,41 +33,48 @@ export default class SignUpPage extends Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                    if (responseJson.success) {
-                        alert(responseJson.playerId);
-                    }
-                    else {
-                        alert(responseJson.msg);
-                    }
+                if (responseJson.success) {
+                    alert(responseJson.playerId);
                 }
+                else {
+                    alert(responseJson.msg);
+                }
+            }
             )
     }
 
     render(){
-        return(<Text style={{paddingBottom : 10,}}>SIGNUP</Text>
-        <View>
-        <TextInput style={{height: 50, borderColor: 'gray', borderWidth: 1}}
-        onSubmitEditing={(text) => this.setState({username: text.nativeEvent.text.trim()}) }/>
-    </View>
-        <Text style={{paddingBottom : 10,}}>PASSWORD</Text>
-        <View>
-        <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
-        onSubmitEditing={(text) => this.setState({password1: text.nativeEvent.text.trim()})}
-    />
-    </View>
-        <Text style={{paddingBottom : 10,}}> REPEAT  PASSWORD</Text>
-        <View>
-        <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
-        onSubmitEditing={(text) => this.setState({password2: text.nativeEvent.text.trim()})}
-    />
-    </View>
+        return(<Text style={{paddingBottom : 10,}}>SignUp</Text>
+            <View>
+            <TextInput style={{height: 50, borderColor: 'gray', borderWidth: 1}}
+            onSubmitEditing={(text) => this.setState({username: text.nativeEvent.text.trim()}) }/>
+	    </View>
+            <Text style={{paddingBottom : 10,}}>Password</Text>
+            <View>
+            <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
+            onSubmitEditing={(text) => this.setState({password1: text.nativeEvent.text.trim()})}
+	    />
+	    </View>
+            <Text style={{paddingBottom : 10,}}> Repeat Password</Text>
+            <View>
+            <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
+            onSubmitEditing={(text) => this.setState({password2: text.nativeEvent.text.trim()})}
+	    />
+	    </View>
+	    </View>
+            <Text style={{paddingBottom : 10,}}> Give your email:</Text>
+            <View>
+            <TextInput style={{height: 50, borderColor: 'red', borderWidth: 1, }}
+            onSubmitEditing={(text) => this.setState({password2: text.nativeEvent.text.trim()})}
+	    />
+	    </View>
+	    
+            <Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
+            style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress={this.signUpPost}>
+            PressMe
+            </Button>
 
-        <Button containerStyle={{ padding:10, height:45, overflow:'hidden', borderRadius:4, backgroundColor: 'white'}}
-        style={{paddingBottom:40,fontSize: 20, color: 'red'}} onPress={this.signUpPost}>
-        PressMe
-        </Button>
-
-        </View>
-    )
+            </View>
+	)
     }
 }
